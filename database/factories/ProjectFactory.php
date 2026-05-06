@@ -16,16 +16,14 @@ class ProjectFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
+public function definition(): array
     {
         return [
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),
             'deadline' => fake()->dateTimeBetween('+1 week', '+3 month'),
-
-          
+            'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
             'deleted_at' => null, 
-            
         ];
     }
        public function archived(): static

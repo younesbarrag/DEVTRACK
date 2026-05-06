@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('projects', function (Blueprint $table) {
-             $table->id();
-    $table->string('title');
-    $table->text('description')->nullable();
-    $table->date('deadline')->nullable();
-    $table->boolean('is_archived')->default(false);
-    $table->timestamps();
-    $table->softDeletes();
+$table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->date('deadline')->nullable();
+            $table->boolean('is_archived')->default(false);
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
