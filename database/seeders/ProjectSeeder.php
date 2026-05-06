@@ -47,7 +47,7 @@ class ProjectSeeder extends Seeder
         project::factory(3)->create()->each(function($project){
             $users =User ::inRandomOrder()->limit(3)->get();
             $project->users()->attach($users->first()->id,['role'=>'lead']);
-            foreach($users->skip(3) as $user){
+            foreach($users->skip(1) as $user){
                 $project->users()->attach($user->id,['role'=>'developer']);
             }
         });
