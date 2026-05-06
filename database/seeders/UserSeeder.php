@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 USE App\Models\User;
 
+
 class UserSeeder extends Seeder
 {
     /**
