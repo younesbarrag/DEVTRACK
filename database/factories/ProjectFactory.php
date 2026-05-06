@@ -23,8 +23,8 @@ class ProjectFactory extends Factory
             'description' => fake()->paragraph(),
             'deadline' => fake()->dateTimeBetween('+1 week', '+3 month'),
 
-            'user_id' => User::factory(),
-            'delete_at' => null, 
+          
+            'deleted_at' => null, 
             
         ];
     }

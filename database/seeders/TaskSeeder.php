@@ -17,7 +17,7 @@ class TaskSeeder extends Seeder
     
     public function run(): void
     {
-    $projects = project::all();
+    $projects = Project::all();
 
         foreach ($projects as $project) {
             // Récupérer les developers du projet
@@ -28,26 +28,26 @@ class TaskSeeder extends Seeder
             // Créer des tâches variées
             Task::factory(3)->create([
                 'project_id' => $project->id,
-                'user_id' => $developers->random()->id,
+                'assigned_to' => $developers->random()->id,
                 'status' => 'todo',
             ]);
 
             Task::factory(2)->create([
                 'project_id' => $project->id,
-                'user_id' => $developers->random()->id,
+                'assigned_to' => $developers->random()->id,
                 'status' => 'in_progress',
             ]);
 
             Task::factory(2)->create([
                 'project_id' => $project->id,
-                'user_id' => $developers->random()->id,
+                'assigned_to' => $developers->random()->id,
                 'status' => 'done',
             ]);
 
             // Quelques tâches urgentes
             Task::factory(2)->urgent()->create([
                 'project_id' => $project->id,
-                'user_id' => $developers->random()->id,
+                'assigned_to' => $developers->random()->id,
             ]);
         }
     }
