@@ -13,21 +13,20 @@ class ProjectResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {
+  {
         return [
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'deadline' => $this->deadline,
-           'is_archived' => $this->deleted_at !== null ,
-           'tasssk_count' => $this->whenCounted('tasks'),
+            
+            'deadline' => $this->deadline ? $this->deadline : 'No deadline set',
+            'created_at' => $this->created_at->format('Y-m-d'),
 
-           'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
-           'user'=> UserResource::collection($this->whenLoaded('users')),
+            'status' => $this->deleted_at ? 'Archived' : 'Active',
 
-           ' created_at' => $this->created_at ->format('Y-m-d H:i:s'),
-           'updated_at' => $this->updated_at ->format('Y-m-d H:i:s'),
+            'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
+
+            'tasks_count' => $this->whenCounted('tasks'),
         ];
-        
     }
 }
