@@ -1,58 +1,250 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DevTrack
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern project management application built with Laravel 13, Tailwind CSS, and Alpine.js.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Project Management**: Create, edit, archive, and restore projects
+- **Task Management**: Full CRUD operations for tasks within projects
+- **User Authentication**: Secure registration and login system
+- **RESTful API**: Complete API endpoints for projects and tasks
+- **Modern UI**: Beautiful gradient-based design with Tailwind CSS
+- **Responsive**: Mobile-friendly interface
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 13.7
+- **Database**: MySQL
+- **Frontend**: Tailwind CSS, Alpine.js
+- **Authentication**: Laravel Breeze
+- **Icons**: Heroicons (via SVG)
 
-## Learning Laravel
+## Routes
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Web Routes
+| Method | URI | Description |
+|--------|-----|-------------|
+| GET | / | Redirects to register |
+| GET | /register | User registration |
+| GET | /login | User login |
+| GET | /dashboard | User dashboard |
+| GET | /projects | List all projects |
+| GET | /projects/create | Create project form |
+| GET | /projects/{project} | View project details |
+| GET | /projects/{project}/edit | Edit project form |
+| POST | /projects | Store new project |
+| PUT/PATCH | /projects/{project} | Update project |
+| DELETE | /projects/{project} | Archive project |
+| GET | /archives/projects | View archived projects |
+| PATCH | /archives/projects/{id}/restore | Restore archived project |
+| GET | /projects/{project}/tasks | List project tasks |
+| GET | /projects/{project}/tasks/create | Create task form |
+| GET | /projects/{project}/tasks/{task} | View task details |
+| GET | /projects/{project}/tasks/{task}/edit | Edit task form |
+| POST | /projects/{project}/tasks | Store new task |
+| PUT/PATCH | /projects/{project}/tasks/{task} | Update task |
+| DELETE | /projects/{project}/tasks/{task} | Delete task |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### API Routes
+| Method | URI | Description |
+|--------|-----|-------------|
+| GET | /api/v1/projects | List all projects |
+| POST | /api/v1/projects | Create project |
+| GET | /api/v1/projects/{project} | Get project |
+| PUT/PATCH | /api/v1/projects/{project} | Update project |
+| DELETE | /api/v1/projects/{project} | Delete project |
+| GET | /api/v1/projects/{project}/tasks | List project tasks |
+| POST | /api/v1/projects/{project}/tasks | Create task |
+| GET | /api/v1/projects/{project}/tasks/{task} | Get task |
+| PUT/PATCH | /api/v1/projects/{project}/tasks/{task} | Update task |
+| DELETE | /api/v1/projects/{project}/tasks/{task} | Delete task |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Installation
 
 ```bash
-composer require laravel/boost --dev
+# Clone the repository
+git clone <repository-url>
+cd DEVTRACK
 
-php artisan boost:install
+# Install dependencies
+composer install
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Configure database in .env
+# DB_DATABASE=devtrack
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Generate application key
+php artisan key:generate
+
+# Run migrations
+php artisan migrate
+
+# Build assets
+npm run dev
+
+# Start the server
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## API Response Format
 
-## Contributing
+**Project Response:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Project Name",
+    "description": "Project description",
+    "deadline": "2026-06-05",
+    "created_at": "2026-05-06",
+    "status": "Active",
+    "tasks": [...]
+  }
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Task Response:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Task title",
+    "description": "Task description",
+    "status": "todo",
+    "priority": "high",
+    "deadline": "2026-05-10",
+    "project": { "id": 1, "name": "Project Name" },
+    "user": { "id": 14, "name": "John Doe" },
+    "created_at": "2026-05-06 11:50"
+  }
+}
+```
 
-## Code of Conduct
+## Database Schema
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### MCD (Modele Conceptuel de Données)
 
-## Security Vulnerabilities
+```
+┌─────────────┐         ┌───────────────────┐         ┌─────────────┐
+│    USER     │         │     PROJECT       │         │     TASK    │
+├─────────────┤         ├───────────────────┤         ├─────────────┤
+│ #id         │1       N│ #id               │1       N│ #id         │
+│ name        ├─────────┤ title             ├─────────┤ title       │
+│ email       │         │ description       │         │ description │
+│ password    │         │ deadline          │         │ status      │
+│ created_at  │         │ user_id (FK)      │         │ priority    │
+│ updated_at  │         │ created_at       │         │ deadline    │
+└─────────────┘         │ updated_at        │         │ project_id  │
+      │                 │ deleted_at        │         │ user_id (FK)│
+      │                 └───────────────────┘         │ created_at  │
+      │                         ▲                     │ updated_at  │
+      │                         │                     └─────────────┘
+      │                         │                            ▲
+      │                         └────────────────────────────┘
+      │
+      │ N
+      ▼
+┌──────────────────────────────────────────────────┐
+│           PROJECT_USER (pivot table)             │
+├──────────────────────────────────────────────────┤
+│ #project_id (FK)  ◄──┐                           │
+│ #user_id (FK)      ◄──┼──┐                       │
+│ role                ◄──┼──┼──► (many-to-many)    │
+│ created_at          ◄──┼──┘                       │
+│ updated_at          ◄──┘                          │
+└──────────────────────────────────────────────────┘
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### MLD (Modele Logique de Données)
+
+```sql
+-- Table: users
+-- CREATE TABLE users (
+--     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     name VARCHAR(255) NOT NULL,
+--     email VARCHAR(255) UNIQUE NOT NULL,
+--     email_verified_at TIMESTAMP NULL,
+--     password VARCHAR(255) NOT NULL,
+--     remember_token VARCHAR(100) NULL,
+--     created_at TIMESTAMP NULL,
+--     updated_at TIMESTAMP NULL
+-- );
+
+-- Table: projects
+-- CREATE TABLE projects (
+--     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     title VARCHAR(255) NOT NULL,
+--     description TEXT NULL,
+--     deadline DATE NULL,
+--     user_id BIGINT UNSIGNED NOT NULL,
+--     created_at TIMESTAMP NULL,
+--     updated_at TIMESTAMP NULL,
+--     deleted_at TIMESTAMP NULL,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
+
+-- Table: project_user (many-to-many)
+-- CREATE TABLE project_user (
+--     project_id BIGINT UNSIGNED NOT NULL,
+--     user_id BIGINT UNSIGNED NOT NULL,
+--     role VARCHAR(50) DEFAULT 'member',
+--     created_at TIMESTAMP NULL,
+--     updated_at TIMESTAMP NULL,
+--     PRIMARY KEY (project_id, user_id),
+--     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
+
+-- -- Table: tasks
+-- CREATE TABLE tasks (
+--     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     title VARCHAR(255) NOT NULL,
+--     description TEXT NULL,
+--     status ENUM('todo', 'in_progress', 'done') DEFAULT 'todo',
+--     priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+--     deadline DATE NULL,
+--     project_id BIGINT UNSIGNED NOT NULL,
+--     user_id BIGINT UNSIGNED NULL,
+--     created_at TIMESTAMP NULL,
+--     updated_at TIMESTAMP NULL,
+--     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+-- );
+
+-- Table: password_reset_tokens (Laravel Breeze)
+-- CREATE TABLE password_reset_tokens (
+--     email VARCHAR(255) PRIMARY KEY,
+--     token VARCHAR(255) NOT NULL,
+--     created_at TIMESTAMP NULL
+-- );
+
+-- Table: sessions (Laravel Breeze)
+-- CREATE TABLE sessions (
+--     id VARCHAR(255) PRIMARY KEY,
+--     user_id BIGINT UNSIGNED NULL,
+--     ip_address VARCHAR(45) NULL,
+--     user_agent TEXT NULL,
+--     payload LONGTEXT NOT NULL,
+--     last_activity INT NOT NULL,
+--     INDEX idx_user_id (user_id)
+-- );
+```
+
+### Relationships
+
+| Relation | Type | Description |
+|----------|------|-------------|
+| User → Project | 1:N | A user can have multiple projects (as lead) |
+| Project → Task | 1:N | A project can have multiple tasks |
+| User → Task | 1:N | A user can be assigned to multiple tasks |
+| Project ↔ User | N:N | A project can have multiple members |
+| Task → User | N:1 | Each task is assigned to one user |
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License
