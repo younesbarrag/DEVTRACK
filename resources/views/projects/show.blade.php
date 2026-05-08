@@ -27,10 +27,20 @@
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-800 italic">Project Tasks</h3>
                     
-                    <form action="{{ route('tasks.store') }}" method="POST" class="flex items-center space-x-2">
+                    <form action="{{ route('projects.tasks.store', $project) }}" method="POST" class="flex items-center space-x-2">
                         @csrf
-                        <input type="hidden" name="project_id" value="{{ $project->id }}">
                         <input type="text" name="title" placeholder="New Task Title" class="rounded border-gray-300 text-sm focus:ring-indigo-500" required>
+                        <select name="priority" class="rounded border-gray-300 text-sm">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                        <select name="assigned_to" class="rounded border-gray-300 text-sm">
+                            <option value="">Select User</option>
+                            @foreach($project->users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
                         <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm font-bold">
                             + Add Task
                         </button>
@@ -51,7 +61,7 @@
                                 </div>
                                 
                                 <div class="flex space-x-2">
-                                    <form action="{{ route('tasks.destroy', $task->id) }}" method="POST">
+                                    <form action="{{ route('projects.tasks.destroy', [$project, $task]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>

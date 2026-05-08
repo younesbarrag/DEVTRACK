@@ -70,10 +70,4 @@ class ProjectController extends Controller
         Project::withTrashed()->findOrFail($id)->restore();
         return redirect()->route('projects.index');
     }
-
-    public function forceDelete($id)
-    {
-        Project::withTrashed()->findOrFail($id)->forceDelete();
-        return redirect()->route('projects.archives');
-    }
 }

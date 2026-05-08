@@ -40,11 +40,11 @@
                                 </div>
 
                                 <div class="flex justify-between items-center border-t pt-4">
-                                    <a href="{{ route('projects.show', $project->id) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold text-sm">
+                                    <a href="{{ route('projects.show', $project) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold text-sm">
                                         View Details →
                                     </a>
                                     
-                                    <form action="{{ route('projects.destroy', $project->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to archive this project?');">
+                                    <form action="{{ route('projects.destroy', $project) }}" method="POST" onsubmit="return confirm('Are you sure you want to archive this project?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-medium">
