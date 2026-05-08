@@ -16,7 +16,8 @@ class TaskController extends Controller
 
     public function create(Project $project)
     {
-        return view('tasks.create', compact('project'));
+        $members = $project->users;
+        return view('tasks.create', compact('project', 'members'));
     }
 
     public function store(Request $request, Project $project)
@@ -25,12 +26,12 @@ class TaskController extends Controller
             'title'       => $request->title,
             'description' => $request->description,
             'status'      => 'todo',
-            'priority'    => $request->priority,
-            'user_id'     => $request->assigned_to,
+            'priority'    => $request->priority ?? 'medium',
+            'user_id'     => $request->assigned_to ?? auth()->id(),
             'deadline'    => $request->deadline,
         ]);
 
-        return redirect()->route('projects.tasks.index', $project);
+        return redirect()->route('projects.show', $project);
     }
 
     public function show(Project $project, Task $task)
@@ -40,7 +41,8 @@ class TaskController extends Controller
 
     public function edit(Project $project, Task $task)
     {
-        return view('tasks.edit', compact('project', 'task'));
+        $members = $project->users;
+        return view('tasks.edit', compact('project', 'task', 'members'));
     }
 
     public function update(Request $request, Project $project, Task $task)
@@ -54,12 +56,12 @@ class TaskController extends Controller
             'deadline'    => $request->deadline,
         ]);
 
-        return redirect()->route('projects.tasks.show', [$project, $task]);
+        return redirect()->route('projects.show', $project);
     }
 
     public function destroy(Project $project, Task $task)
     {
         $task->delete();
-        return redirect()->route('projects.tasks.index', $project);
+        return redirect()->route('projects.show', $project);
     }
 }

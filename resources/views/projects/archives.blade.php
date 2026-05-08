@@ -43,12 +43,6 @@
                                                 @method('PATCH')
                                                 <button type="submit" class="text-green-600 hover:text-green-900">Restore</button>
                                             </form>
-
-                                            <form action="{{ route('projects.forceDelete', $project->id) }}" method="POST" onsubmit="return confirm('Warning: This will be permanently deleted!');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900">Delete Permanently</button>
-                                            </form>
                                         </div>
                                     </td>
                                 </tr>

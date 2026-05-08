@@ -52,7 +52,7 @@
             @method('PATCH'): HTML doesn't support PATCH natively.
             This hidden field makes Laravel route this to update() not store().
         --}}
-        <form method="POST" action="{{ route('tasks.update', $task) }}">
+        <form method="POST" action="{{ route('projects.tasks.update', [$task->project, $task]) }}">
             @csrf
             @method('PATCH')
 
