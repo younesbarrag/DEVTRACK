@@ -3,73 +3,53 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use App\Models\Project;
-use App\Http\Resources\ProjectResource; 
+use App\Http\Resources\ProjectResource;
 
 class ProjectApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-      $projects=Project::all();
+        $projects = Project::with('tasks')->get();
         return ProjectResource::collection($projects);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $project=Project::create([
-        'title' =>$request->title,
-        'description'=>$request->decription,
-        'deadline'=>$request->deadline,
-        'user_id'=>1,
+        $project = Project::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'deadline' => $request->deadline,
+            'user_id' => $request->user_id ?? 1,
+        ]);
 
-       ]);
-
-   return response()->json([
-            'message' => 'creation done',
+        return response()->json([
+            'message' => 'Project created successfully',
             'data' => new ProjectResource($project)
-        ], 210);
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Project $project)
     {
-        $project=Project::with('task')->findOrFail($id);
+        $project->load('tasks');
         return new ProjectResource($project);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Project $project)
     {
-        $project = Project::findOrFail($id);
-        $project->update($request->all());
+        $project->update($request->only(['title', 'description', 'deadline']));
 
         return response()->json([
-            'message'=>'done',
-            'data'=> new ProjectResource($project)
+            'message' => 'Project updated successfully',
+            'data' => new ProjectResource($project)
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Project $project)
     {
-        $project=Project::findOrFail($id);
         $project->delete();
 
-      return response()->json(['message' => 'mcha']);
-    
-            }
+        return response()->json(['message' => 'Project deleted successfully']);
+    }
 }

@@ -3,92 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Project $project)
     {
-        //
-        $task = Task::all();
-        return view("task.index", compact("task"));
+        $tasks = $project->tasks;
+        return view('tasks.index', compact('project', 'tasks'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(Project $project)
     {
-        //
-        return view("task.create");
+        return view('tasks.create', compact('project'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request, Project $project)
     {
-        Task::create([
-            'project_id'  => $request->project_id,
+        $project->tasks()->create([
             'title'       => $request->title,
             'description' => $request->description,
             'status'      => 'todo',
             'priority'    => $request->priority,
-            'assigned_to' => $request->assigned_to,
+            'user_id'     => $request->assigned_to,
             'deadline'    => $request->deadline,
         ]);
 
-        return back();
+        return redirect()->route('projects.tasks.index', $project);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Project $project, Task $task)
     {
-        //
-        $task = Task::find($id);
-        return view('task.show', compact('task'));
+        return view('tasks.show', compact('project', 'task'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Project $project, Task $task)
     {
-        //
-        return view('task.edit', compact('id'));
+        return view('tasks.edit', compact('project', 'task'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Project $project, Task $task)
     {
-        //
-        Task::find($id)->update([
-            'project_id'=> $request->project_id,
-            'title'=> $request->title,
-            'description'=> $request->description,
-            'status'=> '',
-            'priority'=> $request->priority,
-            'assigned_to'=> $request->assigned_to,
-            'deadline'=> $request->deadline
-            ]);
+        $task->update([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'status'      => $request->status ?? $task->status,
+            'priority'    => $request->priority,
+            'user_id'     => $request->assigned_to,
+            'deadline'    => $request->deadline,
+        ]);
 
-        return back();
+        return redirect()->route('projects.tasks.show', [$project, $task]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
+    public function destroy(Project $project, Task $task)
     {
-        //
-        Task::find($id)->delete();
-        return back();
+        $task->delete();
+        return redirect()->route('projects.tasks.index', $project);
     }
 }
