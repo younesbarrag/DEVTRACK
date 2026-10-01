@@ -9,8 +9,8 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title', 'description', 'status', 'priority', 'deadline', 'project_id', 'user_id'
+protected $fillable = [
+        'title', 'description', 'status', 'priority', 'deadline', 'project_id', 'assigned_to', 'user_id',
     ];
 
     //  Accessor : statut formaté pour l'API
@@ -56,7 +56,7 @@ class Task extends Model
     // Developer assigné
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     // Vérifier si urgente

@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-beta.7",
+  "target": "C:\\Users\\pc\\Desktop\\learn php\\htdocs\\DEVTRACK",
+  "installed_at": "2026-06-02T09:44:18.256Z",
+  "profile": "full",
+  "tools": [],
+  "components": [
+    "laravel-patterns",
+    "laravel-tdd",
+    "laravel-security",
+    "laravel-core-internals",
+    "laravel-eloquent",
+    "laravel-database",
+    "rules",
+    "laravel-artisan",
+    "laravel-migration",
+    "laravel-container"
+  ]
+}

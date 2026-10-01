@@ -41,7 +41,7 @@ class ProjectPolicy
     }
 
     public function manageMembers (User $user, Project $project): bool {
-        return $user->isMember($project);
+        return $user->isLead($project);
     }
 
     /**
