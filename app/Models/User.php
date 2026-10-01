@@ -39,7 +39,7 @@ class User extends Authenticatable
     // Tâches assignées
     public function tasks()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'assigned_to');
     }
 
     // Vérifier si lead d'un projet

@@ -1,171 +1,137 @@
-{{--
-    US9 — Create task form (lead only)
-    Extends: layouts/app.blade.php
-    Controller: TaskController@create (GET) + TaskController@store (POST)
-    Route: GET /projects/{project}/tasks/create
-           POST /projects/{project}/tasks
-
-    Variables available:
-        $project → Project model (needed for the form action URL)
-        $members → Collection<User> — project members only (for assignee dropdown)
-
-    IMPORTANT: $members contains ONLY project members, not all users.
-    The StoreTaskRequest also validates that assigned_to is a project member.
-    This is double validation: UI (dropdown only shows members) + server (Rule::exists).
---}}
-{{-- @extends('layouts.app')
-@section('title', 'Nouvelle tâche')
-
-@section('content') --}}
 <x-app-layout>
-<div style="max-width:560px; margin:0 auto;">
-
-    {{-- ── Page header ──────────────────────────────────────────────────── --}}
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">Nouvelle tâche</h1>
-            <p class="page-subtitle">
-                Projet :
-                <a href="{{ route('projects.show', $project) }}"
-                   style="color:#6366f1; text-decoration:none;">
-                    {{ $project->title }}
-                </a>
-            </p>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                New Task — {{ $project->title }}
+            </h2>
+            <a href="{{ route('projects.show', $project) }}"
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition">
+                Back to Project
+            </a>
         </div>
-        <a href="{{ route('projects.show', $project) }}" class="btn btn-secondary">Annuler</a>
-    </div>
+    </x-slot>
 
-    {{-- ── Form card ────────────────────────────────────────────────────── --}}
-    <div class="card">
-        {{--
-            action: POST /projects/{project}/tasks → TaskController@store
-            The {project} parameter is available in StoreTaskRequest
-            via $this->route('project') for the assigned_to pivot check.
-        --}}
-        <form method="POST" action="{{ route('projects.tasks.store', $project) }}">
-            @csrf
+    <div class="py-12">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Title --}}
-            <div class="form-group">
-                <label class="form-label" for="title">
-                    Titre de la tâche <span class="form-required">*</span>
-                </label>
-                <input
-                    class="form-input"
-                    id="title"
-                    name="title"
-                    type="text"
-                    value="{{ old('title') }}"
-                    placeholder="Ex : Implémenter l'authentification"
-                    autofocus
-                    maxlength="255"
-                    required
-                >
-                @error('title')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Description --}}
-            <div class="form-group">
-                <label class="form-label" for="description">Description</label>
-                <textarea
-                    class="form-textarea"
-                    id="description"
-                    name="description"
-                    placeholder="Détails, critères d'acceptation, ressources utiles…"
-                >{{ old('description') }}</textarea>
-                @error('description')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Deadline + Priority in two columns --}}
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label" for="deadline">Deadline</label>
-                    <input
-                        class="form-input"
-                        id="deadline"
-                        name="deadline"
-                        type="date"
-                        value="{{ old('deadline') }}"
-                    >
-                    @error('deadline')
-                        <p class="form-error">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="priority">
-                        Priorité <span class="form-required">*</span>
-                    </label>
-                    <select class="form-select" id="priority" name="priority" required>
-                        <option value="">— Choisir —</option>
-                        <option value="low"
-                            {{ old('priority') === 'low' ? 'selected' : '' }}>
-                            🟢 Basse
-                        </option>
-                        <option value="medium"
-                            {{ old('priority') === 'medium' ? 'selected' : '' }}>
-                            🟡 Moyenne
-                        </option>
-                        <option value="high"
-                            {{ old('priority') === 'high' ? 'selected' : '' }}>
-                            🔴 Haute
-                        </option>
-                    </select>
-                    @error('priority')
-                        <p class="form-error">{{ $message }}</p>
-                    @enderror
+            {{-- Description strip --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8 border-l-4 border-indigo-500">
+                <p class="text-gray-600 mb-2">{{ $project->description }}</p>
+                <div class="text-sm text-gray-500 italic">
+                    Deadline: {{ $project->deadline ?? 'No deadline' }}
                 </div>
             </div>
 
-            {{-- Assignee dropdown — project members ONLY --}}
-            <div class="form-group">
-                <label class="form-label" for="assigned_to">
-                    Assigné à <span class="form-required">*</span>
-                </label>
-                {{--
-                    Only $members (project members) are shown — not all users.
-                    The StoreTaskRequest validates: assigned_to must exist
-                    in project_members for this project.
-                --}}
-                <select class="form-select" id="assigned_to" name="assigned_to" required>
-                    <option value="">— Choisir un développeur —</option>
-                    @forelse ($members as $member)
-                        <option value="{{ $member->id }}"
-                            {{ old('assigned_to') == $member->id ? 'selected' : '' }}>
-                            {{ $member->name }} ({{ $member->email }})
-                        </option>
-                    @empty
-                        <option value="" disabled>Aucun membre dans ce projet</option>
-                    @endforelse
-                </select>
-                @if ($members->isEmpty())
-                    <p class="form-hint">
-                        ⚠ Ajoutez d'abord des membres au projet avant de créer des tâches.
-                    </p>
-                @endif
-                @error('assigned_to')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
+            {{-- Create task form --}}
+            <div class="bg-white overflow-hidden shadow-sm rounded-3xl border border-gray-200 p-8">
+                <h3 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-6">Create a Task</h3>
+
+                <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-6">
+                    @csrf
+
+                    {{-- Title --}}
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700" for="title">Title <span class="text-red-500">*</span></label>
+                        <input
+                            id="title"
+                            name="title"
+                            type="text"
+                            value="{{ old('title') }}"
+                            placeholder="e.g. Implement user authentication"
+                            class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            maxlength="255"
+                            autofocus
+                            required
+                        >
+                        @error('title')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Description --}}
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700" for="description">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            placeholder="Details, acceptance criteria, useful resources…"
+                            class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        >{{ old('description') }}</textarea>
+                        @error('description')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Deadline + Priority --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700" for="deadline">Deadline</label>
+                            <input
+                                id="deadline"
+                                name="deadline"
+                                type="date"
+                                value="{{ old('deadline') }}"
+                                class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                            @error('deadline')
+                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700" for="priority">Priority <span class="text-red-500">*</span></label>
+                            <select id="priority" name="priority" required
+                                    class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">— Choose —</option>
+                                <option value="low" {{ old('priority') === 'low' ? 'selected' : '' }}>Low</option>
+                                <option value="medium" {{ old('priority') === 'medium' ? 'selected' : '' }}>Medium</option>
+                                <option value="high" {{ old('priority') === 'high' ? 'selected' : '' }}>High</option>
+                            </select>
+                            @error('priority')
+                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Assignee — project members only --}}
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700" for="assigned_to">Assigned To <span class="text-red-500">*</span></label>
+                        <select id="assigned_to" name="assigned_to" required {{ $members->isEmpty() ? 'disabled' : '' }}
+                                class="mt-1 block w-full rounded-lg border-gray-300 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">— Choose a developer —</option>
+                            @forelse($members as $member)
+                                <option value="{{ $member->id }}" {{ (int) old('assigned_to') === $member->id ? 'selected' : '' }}>
+                                    {{ $member->name }} ({{ ucfirst($member->pivot->role) }})
+                                </option>
+                            @empty
+                                <option value="" disabled>No members in this project</option>
+                            @endforelse
+                        </select>
+                        @if($members->isEmpty())
+                            <p class="mt-1 text-sm text-amber-600">
+                                Add members to this project before creating tasks.
+                            </p>
+                        @endif
+                        @error('assigned_to')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Form actions --}}
+                    <div class="flex items-center justify-between pt-4">
+                        <a href="{{ route('projects.show', $project) }}"
+                           class="inline-flex items-center px-4 py-2.5 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all">
+                            Cancel
+                        </a>
+                        <button type="submit" {{ $members->isEmpty() ? 'disabled' : '' }}
+                                class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            Create Task
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            {{-- ── Form actions ──────────────────────────────────────────── --}}
-            <div class="flex-between" style="margin-top:1.5rem;">
-                <a href="{{ route('projects.show', $project) }}" class="btn btn-secondary">
-                    Annuler
-                </a>
-                <button type="submit" class="btn btn-primary"
-                        {{ $members->isEmpty() ? 'disabled' : '' }}>
-                    Créer la tâche
-                </button>
-            </div>
-
-        </form>
+        </div>
     </div>
-
-</div>
 </x-app-layout>
-

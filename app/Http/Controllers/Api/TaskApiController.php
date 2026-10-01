@@ -23,7 +23,7 @@ class TaskApiController extends Controller
             'description' => $request->description,
             'status' => $request->status ?? 'todo',
             'priority' => $request->priority,
-            'user_id' => $request->user_id,
+            'assigned_to' => $request->assigned_to,
             'deadline' => $request->deadline,
         ]);
 
@@ -40,7 +40,7 @@ class TaskApiController extends Controller
 
     public function update(Request $request, Project $project, Task $task)
     {
-        $task->update($request->only(['title', 'description', 'status', 'priority', 'deadline', 'user_id']));
+        $task->update($request->only(['title', 'description', 'status', 'priority', 'deadline', 'assigned_to']));
 
         return response()->json([
             'message' => 'Task updated successfully',

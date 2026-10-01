@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\User;
+use App\Http\Requests\AddProjectMemberRequest;
 
 class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::all();
+        $projects = Project::where('user_id', auth()->id())->get();
         return view('projects.index', compact('projects'));
     }
 
@@ -21,19 +22,21 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
-        Project::create([
+        $project = Project::create([
             'title' => $request->title,
             'description' => $request->description,
             'deadline' => $request->deadline,
-            'user_id' => 1, 
+            'user_id' => auth()->id(),
         ]);
+
+        $project->users()->attach(auth()->id(), ['role' => 'lead']);
 
         return redirect()->route('projects.index');
     }
 
     public function show(Project $project)
     {
-        $project->load('tasks');
+        $project->load(['tasks.user', 'users']);
         return view('projects.show', compact('project'));
     }
 
@@ -57,6 +60,36 @@ class ProjectController extends Controller
     {
         $project->delete();
         return redirect()->route('projects.index');
+    }
+
+    // Ajoute un membre (développeur) au projet
+    public function addMember(AddProjectMemberRequest $request, Project $project)
+    {
+        $user = User::where('email', $request->validated('email'))->firstOrFail();
+
+        $project->users()->attach($user->id, [
+            'role' => $request->validated('role', 'developer'),
+        ]);
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', "{$user->name} was added to the project team.");
+    }
+
+    // Retire un membre du projet
+    public function removeMember(Request $request, Project $project, User $user)
+    {
+        $this->authorize('manageMembers', $project);
+
+        if ($user->id === $project->user_id) {
+            return back()->with('error', 'The project lead cannot be removed.');
+        }
+
+        $project->users()->detach($user->id);
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', "{$user->name} was removed from the project team.");
     }
 
     public function showArchives()

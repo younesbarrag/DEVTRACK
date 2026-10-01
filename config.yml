@@ -1,0 +1,509 @@
+# DevTrack — User Story Implementation Audit
+
+## Role
+
+You are a senior Laravel developer and code auditor working on my existing DevTrack project.
+
+Your task is to inspect the current Laravel codebase and determine which User Stories are:
+
+* ✅ COMPLETED — Fully implemented and working based on the code and available tests.
+* 🟡 PARTIALLY COMPLETED — Some functionality exists, but implementation or requirements are incomplete.
+* ❌ NOT IMPLEMENTED — No meaningful implementation has been found.
+* ⚠️ NEEDS VERIFICATION — Code exists, but its behavior cannot be confirmed without testing or additional investigation.
+
+**IMPORTANT: This is an audit first. Do not modify, delete, or overwrite project files during the audit. Do not create migrations, controllers, routes, or Jira tickets yet.**
+
+---
+
+## Project Context
+
+Project Name: DevTrack
+
+Application Type: Team Project Management System
+
+Technology Stack:
+
+* PHP
+* Laravel
+* MySQL
+* Eloquent ORM
+* Blade
+* Tailwind CSS
+* Laravel Authentication
+* Laravel Policies
+* RESTful APIs
+* Laravel Sanctum (if configured)
+
+Main Features:
+
+* User authentication
+* Project management
+* Team member management
+* Task management
+* Role-based authorization
+* Dashboard
+* Task API
+
+---
+
+## Step 1 — Inspect the Project Structure
+
+Inspect the relevant project files, including:
+
+* app/Models/
+* app/Http/Controllers/
+* app/Http/Requests/
+* app/Http/Resources/
+* app/Policies/
+* database/migrations/
+* database/seeders/
+* routes/web.php
+* routes/api.php (if available)
+* resources/views/
+* tests/ (if available)
+* composer.json
+* Laravel authentication configuration
+* Sanctum configuration (if installed)
+
+Also inspect the project's actual database column names, relationships, route definitions, and authentication configuration.
+
+Do not assume that a file or feature exists based only on its name.
+
+---
+
+## Step 2 — Audit Every User Story
+
+Review the following User Stories individually.
+
+For each User Story, report:
+
+1. User Story ID and title
+2. Status: COMPLETED / PARTIALLY COMPLETED / NOT IMPLEMENTED / NEEDS VERIFICATION
+3. Evidence: exact file paths, relevant classes, methods, routes, migrations, and tests
+4. What is working
+5. What is missing or incorrect
+6. Required next steps
+7. Suggested manual test or automated test
+
+Do not mark a feature as completed only because a method or route exists. Check whether its behavior satisfies the requirements and authorization rules.
+
+---
+
+## US1 — Authentication
+
+Requirements:
+
+* Registration
+* Login
+* Logout
+* Authentication middleware
+* Password hashing
+* Protected routes
+
+Inspect:
+
+* Authentication controllers
+* Laravel Breeze or other authentication implementation
+* Routes
+* Middleware
+* User model
+* Authentication tests, if available
+
+---
+
+## US2 — Dashboard
+
+Requirements:
+
+* Display projects where the authenticated user is a lead or project member.
+* Display total tasks per project.
+* Display completed tasks per project.
+* Display dashboard statistics.
+* Prevent users from seeing unauthorized project information.
+
+Inspect:
+
+* Dashboard route and controller
+* Dashboard Blade view
+* Project and Task relationships
+* Database queries
+* Authorization logic
+* Potential N+1 query problems
+
+Check whether the dashboard currently shows only lead-owned projects instead of all projects where the user is a member.
+
+---
+
+## US3 — Create a Project
+
+Requirements:
+
+* Authenticated lead can create a project.
+* Project contains title, description, and deadline.
+* Authenticated user is correctly assigned as project lead.
+* Validation and authorization are implemented.
+
+Inspect:
+
+* ProjectController
+* Project model
+* Project migration
+* Form Requests
+* Project creation routes
+* Policies
+
+---
+
+## US4 — Update a Project
+
+Check:
+
+* Lead-only authorization
+* Validation
+* Correct database update
+* Edit form
+* Route model binding
+
+---
+
+## US5 — Archive a Project
+
+Check:
+
+* Archive implementation
+* SoftDeletes or is_archived approach
+* Archive visibility rules
+* Dashboard filtering
+* Authorization
+* Database configuration
+
+Identify whether the application uses SoftDeletes, an is_archived column, or another approach.
+
+---
+
+## US6 — Restore an Archived Project
+
+Check:
+
+* Restore method
+* Restore route
+* Authorization
+* SoftDeletes configuration, if applicable
+* Project visibility after restoration
+
+---
+
+## US7 — Add / Remove Members
+
+Check:
+
+* Project-member relationships
+* Pivot table and migration
+* Email-based member lookup
+* Duplicate membership prevention
+* Lead-only authorization
+* Add and remove routes and controllers
+* Validation
+
+---
+
+## US8 — Project Task List
+
+Check:
+
+* Task listing
+* Project-task relationship
+* Assigned developer display
+* Status display
+* Deadline urgency indicator
+* Access for lead and project members
+* N+1 query problems
+
+---
+
+## US9 — Create a Task
+
+Check:
+
+* Lead-only authorization
+* Task creation
+* Project association
+* Developer assignment
+* Validation
+* Whether the assigned developer belongs to the project
+* Default status
+
+---
+
+## US10 — Update a Task
+
+Check:
+
+* Lead-only authorization
+* Form Requests
+* Task update method
+* Edit view
+* Allowed fields
+* Project ownership and route model binding
+
+---
+
+## US11 — Change Task Status
+
+Check:
+
+* Only the assigned developer or project lead can update the status.
+* Assigned developers cannot change title, description, priority, deadline, or assignment through the status workflow.
+* Valid status transitions and validation.
+* Task ownership and project membership checks.
+
+---
+
+## US12 — Delete a Task
+
+Check:
+
+* Lead-only authorization
+* Delete method
+* Route
+* Policy
+* Database behavior
+
+---
+
+## US13 — Task API Endpoint
+
+Requirements:
+GET /api/projects/{project}/tasks
+
+Check:
+
+* API route
+* Authentication middleware
+* Sanctum configuration, if applicable
+* TaskApiController
+* TaskResource
+* Project authorization
+* Task relationships
+* JSON response
+* Status accessor
+* API tests
+
+Check whether the API only implements index or also has additional endpoints.
+
+---
+
+## Bonus Features
+
+Audit the following separately:
+
+1. Permanent project deletion using forceDelete()
+2. Project title mutator using ucfirst
+3. Task urgent() local scope
+
+For each bonus feature, verify the actual implementation and identify missing tests or edge cases.
+
+---
+
+## Step 3 — Security and Architecture Review
+
+Inspect the application for:
+
+* Incorrect authorization rules
+* Missing authentication middleware
+* Mass assignment risks
+* Missing validation
+* Incorrect route model binding
+* Inconsistent foreign key names (lead_id vs user_id)
+* Unauthorized project or task access
+* Missing API authentication
+* N+1 queries
+* Incorrect relationship definitions
+* Database integrity problems
+
+Do not make changes. Report issues with file paths and clear explanations.
+
+---
+
+## Step 4 — Produce a Final Audit Report
+
+Generate a structured report with the following sections:
+
+### A. Executive Summary
+
+* Total User Stories audited
+* Completed
+* Partially completed
+* Not implemented
+* Needs verification
+* Important blockers
+
+Do not count a User Story as completed unless the available evidence supports it.
+
+### B. User Story Status Table
+
+Columns:
+
+| ID | User Story | Status | Evidence | Missing Work |
+| -- | ---------- | ------ | -------- | ------------ |
+
+### C. Completed Features
+
+List the features supported by the code and evidence.
+
+### D. Partially Completed Features
+
+Explain what exists and what remains.
+
+### E. Missing Features
+
+List User Stories that need implementation.
+
+### F. Bugs and Risks
+
+List the most important technical issues discovered.
+
+### G. Recommended Implementation Order
+
+Create a prioritized development plan based on:
+
+1. Blocking bugs and database consistency
+2. Authentication and authorization
+3. Core project functionality
+4. Task management
+5. Dashboard requirements
+6. API
+7. Bonus features
+8. Testing and cleanup
+
+Do not prioritize by guessing what has already been implemented. Base the order on audit findings.
+
+### H. Next Action
+
+Recommend the single most appropriate next task to work on, with:
+
+* User Story ID
+* Exact file(s) to inspect or modify
+* Objective
+* Acceptance criteria
+* Testing steps
+
+Wait for my confirmation before implementing any changes.
+
+---
+
+## Final Rules
+
+* Use English in the report.
+* Explain technical terms clearly.
+* Do not invent completed features.
+* Do not change files during the audit.
+* Do not create Jira tickets during the audit.
+* Do not run destructive database commands.
+* Clearly distinguish verified behavior from code that merely exists.
+* Preserve the existing Laravel architecture where possible.
+
+---
+
+## Appendix — Documentation of Features That Do Not Exist
+
+The following features were audited and found to have NO meaningful implementation in the codebase. They must be built from scratch. Do not mark them as partially completed or existing based only on a route name, model, or stub.
+
+### 1. US7 — Add / Remove Members (NOT IMPLEMENTED)
+
+| Item | Status | Evidence |
+| ---- | ------ | -------- |
+| Add member controller | ❌ Missing | No MemberController / membership controller exists |
+| Add member route | ❌ Missing | No route for adding a member (only `project_user` pivot table exists) |
+| Remove member route | ❌ Missing | No route for removing a member |
+| Remove member controller | ❌ Missing | No remove method exists |
+| Email-based member lookup | ❌ Missing | No code searches users by email to add as a member |
+| Duplicate membership prevention | ❌ Missing | No unique constraint on `(project_id, user_id)` in `project_user`; no application-level check |
+| Lead-only authorization | ❌ Missing | `ProjectPolicy::manageMembers()` allows ANY member (`ProjectPolicy.php:43-45`) and is never invoked |
+| Add / remove member Blade views | ❌ Missing | No project members management view |
+| Member validation | ❌ Missing | No validation for member email / role |
+| Member UI entry point | ❌ Missing | No navigation or button linking to member management |
+
+### 2. US11 — Change Task Status (NOT IMPLEMENTED)
+
+| Item | Status | Evidence |
+| ---- | ------ | -------- |
+| Status-change controller method | ❌ Missing | No `updateStatus()` method in `TaskController` |
+| Status-change route | ❌ Missing | No `PATCH /tasks/{task}/status` or equivalent route in `routes/web.php` |
+| Status-change view | ❌ Missing | No dedicated status workflow UI |
+| Valid status transitions | ❌ Missing | No transition rules (e.g., todo → in_progress → done) |
+| Status validation | ❌ Missing | No validation rule for allowed status values or transitions |
+| Assigned-developer authorization | ❌ Missing | `TaskPolicy::updateStatuse()` exists but is dead code (never called), has a typo, and allows ANY member |
+| Restriction: assigned devs cannot change other fields | ❌ Missing | No code separates status updates from full task edits |
+| Status-change tests | ❌ Missing | No tests exist |
+
+### 3. Bonus Feature — Permanent Project Deletion (forceDelete) (NOT IMPLEMENTED)
+
+| Item | Status | Evidence |
+| ---- | ------ | -------- |
+| forceDelete controller method | ❌ Missing | No `forceDelete()` method in `ProjectController` |
+| forceDelete route | ❌ Missing | Only `projects.destroy` (soft delete) exists; no permanent-delete route |
+| forceDelete UI | ❌ Missing | No view/button triggers permanent deletion |
+| forceDelete wiring | ❌ Missing | `ProjectPolicy::forceDelete()` is a dead stub (`ProjectPolicy.php:66-69`) — never called from any controller or route |
+
+### 4. Missing Blade Views Referenced by Existing Routes
+
+| View | Status | Referenced By |
+| ---- | ------ | ------------- |
+| `resources/views/tasks/index.blade.php` | ❌ Does not exist | `TaskController@index` (`TaskController.php:13`) will throw a "view not found" error |
+| `resources/views/tasks/show.blade.php` | ❌ Does not exist | `TaskController@show` (`TaskController.php:37-40`) will throw a "view not found" error |
+
+### 5. Missing Task Model Accessors Used by Views
+
+| Accessor | Status | Referenced By |
+| -------- | ------ | ------------- |
+| `Task::formatted_status` | ❌ Does not exist | `resources/views/tasks/edit.blade.php:43` will error |
+| `Task::status_color` | ❌ Does not exist | `resources/views/tasks/edit.blade.php:43` will error |
+
+### 6. Missing API Authentication (US13 prerequisite)
+
+| Item | Status | Evidence |
+| ---- | ------ | -------- |
+| Laravel Sanctum package | ❌ Not installed | Not in `composer.json`, no `config/sanctum.php` |
+| `auth:sanctum` middleware on API routes | ❌ Missing | `routes/api.php` has no auth middleware — API is fully public |
+| API tests | ❌ Missing | No feature tests for any API endpoint |
+
+### 7. Missing Authorization Enforcement (Cross-cutting, Blocks US3-US12)
+
+| Item | Status | Evidence |
+| ---- | ------ | -------- |
+| `$this->authorize()` calls in controllers | ❌ Missing | No controller invokes a policy |
+| `Gate` usage | ❌ Missing | No Gates defined |
+| `middleware('can:...')` on routes | ❌ Missing | No route uses policy middleware |
+| FormRequest `authorize()` checks | ❌ Missing | `StoreProjectRequest`, `UpdateProjectRequest`, `StoreTaskRequest` all return `true` |
+
+### 8. Missing Validation Wiring
+
+| Item | Status | Evidence |
+| ---- | ------ | -------- |
+| `StoreProjectRequest` used in controller | ❌ Missing | `ProjectController@store` uses plain `Request` (`ProjectController.php:24`) |
+| `UpdateProjectRequest` used in controller | ❌ Missing | `ProjectController@update` uses plain `Request` (`ProjectController.php:47`) |
+| `StoreTaskRequest` used in controller | ❌ Missing | `TaskController@store/update` use plain `Request` |
+| Server-side "developer must be a project member" rule | ❌ Missing | No `Rule::exists` / member check when assigning a task |
+
+### 9. Missing Project / Task / Dashboard / API Tests
+
+| Area | Status |
+| ---- | ------ |
+| Project feature tests (create/update/archive/restore/members) | ❌ Missing |
+| Task feature tests (create/update/delete/status) | ❌ Missing |
+| Dashboard tests (stats, membership visibility, privacy) | ❌ Missing |
+| API tests (index/store/show/update/destroy + auth) | ❌ Missing |
+| Policy unit tests | ❌ Missing |
+
+Note: Only default Breeze auth tests exist (`tests/Feature/Auth/*`, `tests/Feature/ProfileTest.php`).
+
+---
+
+## Appendix — Known Non-Existent Data Consistency
+
+These are not features but data-model gaps documented for completeness. They are rooted in code that reads one column while writing another, so the "assigned developer" feature effectively does not work end-to-end:
+
+* `tasks.assigned_to` is written by the seeders/`TaskSeeder` and read by `Task::user()` / `User::tasks()` (`Task.php:59`, `User.php:42`).
+* `tasks.user_id` is written by controllers, `TaskFactory`, and `TaskResource` (`TaskController.php:30,55`, `TaskFactory.php:33`, `TaskResource.php:24`) — this column is NOT read by any relationship.
+* As a result, tasks created through the UI have no readable assignee: dashboard "My Tasks", the assignee dropdown default, `TaskPolicy` checks, and API `user` payload all return empty/null for them.
