@@ -10,10 +10,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $userId = $user->id;
 
         $projectIds = collect()
-            ->merge(auth()->user()->projects()->pluck('projects.id'))
+            ->merge($user->projects()->pluck('projects.id'))
             ->merge(Project::where('user_id', $userId)->pluck('id'))
             ->unique()
             ->values()
@@ -23,12 +24,6 @@ class DashboardController extends Controller
             ->latest()
             ->withCount('tasks')
             ->withCount(['tasks as completed_tasks' => fn ($q) => $q->where('status', 'done')])
-            ->get();
-
-        $tasks = auth()->user()
-            ->tasks()
-            ->with('project')
-            ->latest()
             ->get();
 
         $totalProjects = count($projectIds);
@@ -41,14 +36,29 @@ class DashboardController extends Controller
             ->where('status', 'done')
             ->count();
 
+        // Tâches assignées à l'utilisateur connecté (User::tasks() = hasMany(Task, 'assigned_to')).
+        // Le décompte par statut est fait en base : pas de chargement duataset complet.
+        $myTasks = $user->tasks()
+            ->with('project')
+            ->latest()
+            ->get();
+
+        $assignedTasks = $user->tasks()->count();
+
+        $assignedStatusCounts = Task::assignedTo($user)
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status')
+            ->all();
+
         return view('dashboard', compact(
             'projects',
             'totalProjects',
             'activeTasks',
             'completedTasks',
-            'tasks'
+            'myTasks',
+            'assignedTasks',
+            'assignedStatusCounts'
         ));
     }
-
-    
 }

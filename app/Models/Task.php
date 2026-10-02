@@ -59,10 +59,24 @@ protected $fillable = [
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
+    // Créateur de la tâche (celui qui l'a ajoutée au projet)
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Scope : tâches assignées à un developer donné
+    public function scopeAssignedTo($query, User $user)
+    {
+        return $query->where('assigned_to', $user->id);
+    }
+
     // Vérifier si urgente
     public function isUrgent(): bool
     {
-        return $this->status !== 'done' 
+        // Sans deadline, une tâche n'est jamais urgente.
+        return $this->status !== 'done'
+            && $this->deadline !== null
             && $this->deadline <= now()->addHours(48);
     }
 }

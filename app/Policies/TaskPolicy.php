@@ -18,10 +18,16 @@ class TaskPolicy
 
     /**
      * Determine whether the user can view the model.
+     *
+     * Le lead voit toutes les tâches de ses projets. Un developer ne voit que
+     * les tâches qui lui sont assignées : sans cette restriction, n'importe quel
+     * membre du projet pourrait ouvrir les tâches d'un autre developer en
+     * modifiant l'URL.
      */
     public function view(User $user, Task $task): bool
     {
-        return $user->isMember($task->project);
+        return $user->isLead($task->project)
+            || ($task->assigned_to === $user->id && $user->isMember($task->project));
     }
 
     /**

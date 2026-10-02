@@ -121,21 +121,33 @@
                                 @endif
                             </div>
 
-                            {{-- Actions --}}
+                            {{-- Actions — visibles selon les droits réels sur la tâche --}}
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('projects.tasks.edit', [$project, $task]) }}"
-                                   class="inline-flex items-center px-3 py-1.5 text-sm font-bold text-white bg-gray-900 rounded-lg hover:bg-indigo-600 transition-all">
-                                    Edit
-                                </a>
-                                <form action="{{ route('projects.tasks.destroy', [$project, $task]) }}" method="POST"
-                                      onsubmit="return confirm('Delete this task?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="inline-flex items-center px-3 py-1.5 text-sm font-bold text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-all">
-                                        Delete
-                                    </button>
-                                </form>
+                                @can('view', $task)
+                                    <a href="{{ route('tasks.assigned', [$project, $task]) }}"
+                                       class="inline-flex items-center px-3 py-1.5 text-sm font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all">
+                                        Assinged To
+                                    </a>
+                                @endcan
+
+                                @can('update', $task)
+                                    <a href="{{ route('projects.tasks.edit', [$project, $task]) }}"
+                                       class="inline-flex items-center px-3 py-1.5 text-sm font-bold text-white bg-gray-900 rounded-lg hover:bg-indigo-600 transition-all">
+                                        Edit
+                                    </a>
+                                @endcan
+
+                                @can('delete', $task)
+                                    <form action="{{ route('projects.tasks.destroy', [$project, $task]) }}" method="POST"
+                                          onsubmit="return confirm('Delete this task?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="inline-flex items-center px-3 py-1.5 text-sm font-bold text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-all">
+                                            Delete
+                                        </button>
+                                    </form>
+                                @endcan
                             </div>
                         </div>
                     </div>

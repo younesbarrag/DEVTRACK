@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::post('projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.members.store');
     Route::delete('projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.members.destroy');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('tasks.edit', [TaskController::class, 'edit']);
+    Route::get('/my/tasks', [TaskController::class, 'myTasks'])->name('tasks.assigned');
 });
 
 require __DIR__.'/auth.php';
